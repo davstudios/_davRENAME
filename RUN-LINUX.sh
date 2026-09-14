@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")"
+command -v node >/dev/null || { echo "[ERRORE] Node.js non trovato."; exit 1; }
+command -v cargo >/dev/null || { echo "[ERRORE] Rust/Cargo non trovato. Installa Rust con rustup."; exit 1; }
+npm install --no-audit --no-fund
+echo "Avvio _davRENAME..."
+npm run desktop

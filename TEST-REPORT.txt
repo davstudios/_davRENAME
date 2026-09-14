@@ -1,0 +1,22 @@
+_davRENAME v1.0.0
+
+JavaScript syntax: PASS
+CSS structural validation: PASS
+Automated tests: 12/12 PASS
+Windows collision behavior: PASS
+macOS conservative collision behavior: PASS
+Linux case-sensitive behavior: PASS
+Unix filename behavior: PASS
+Theme transition implementation: PASS
+Language transition implementation: PASS
+Animated Theme/Language custom dropdowns: PASS
+Keyboard and Escape handling for custom dropdowns: PASS
+Reduced-motion fallback: PASS
+Source comment audit JS/CSS/Rust/HTML: PASS
+Future source-comment regression test: PASS
+Buy Me a Coffee localized button: PASS
+Donation URL restricted in Tauri capability: PASS
+Native Rust compile: NOT RUN - Rust/Cargo unavailable in generation environment
+Frontend Vite build: NOT RUN - dependency installation exceeded environment timeout
+Native installers: produced by the included GitHub Actions release workflow or a local native build
+Icon set: supplied ICO retained and PNG/ICNS variants included
