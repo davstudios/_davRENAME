@@ -18,4 +18,4 @@
 
 Il workflow `.github/workflows/release.yml` compila sui runner nativi di GitHub e allega i pacchetti direttamente a una GitHub Release.
 
-Può essere avviato dalla scheda Actions oppure tramite un tag coerente con la versione dell'app, ad esempio `v1.0.0`.
+Può essere avviato dalla scheda Actions oppure tramite un tag coerente con la versione dell'app, ad esempio `v1.1.0`.

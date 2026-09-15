@@ -26,6 +26,6 @@ Dopo il push del progetto:
 5. Attendere le tre build.
 6. Aprire `Releases` per trovare gli installer pronti da scaricare.
 
-Il workflow usa la versione presente nel progetto per creare il tag e la release, ad esempio `v1.0.0`.
+Il workflow usa la versione presente nel progetto per creare il tag e la release, ad esempio `v1.1.0`.
 
-In alternativa si può creare e pushare un tag `v1.0.0`, che avvierà la stessa pipeline automaticamente.
+In alternativa si può creare e pushare un tag `v1.1.0`, che avvierà la stessa pipeline automaticamente.

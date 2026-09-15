@@ -13,6 +13,12 @@
       "allow": [
         {
           "url": "https://buymeacoffee.com/davstudios"
+        },
+        {
+          "url": "https://www.davstudios.it"
+        },
+        {
+          "url": "https://www.davstudios.it/en"
         }
       ]
     }

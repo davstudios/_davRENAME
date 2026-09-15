@@ -125,11 +125,35 @@ pub fn get_history(app: AppHandle) -> Result<Vec<HistoryEntry>, String> {
 
 #[tauri::command]
 pub fn undo_last(app: AppHandle) -> Result<RenameResult, String> {
-    let mut history = load_history(&app)?;
+    let history = load_history(&app)?;
     let Some(index) = history.iter().rposition(|entry| !entry.undone) else {
         return Err("Non ci sono operazioni da annullare.".into());
     };
+    undo_history_index(app, history, index)
+}
 
+#[tauri::command]
+pub fn undo_history_entry(app: AppHandle, id: String) -> Result<RenameResult, String> {
+    let history = load_history(&app)?;
+    let Some(index) = history.iter().position(|entry| entry.id == id && !entry.undone) else {
+        return Err("Operazione non trovata oppure già annullata.".into());
+    };
+    undo_history_index(app, history, index)
+}
+
+#[tauri::command]
+pub fn write_text_file(path: String, content: String) -> Result<(), String> {
+    let target = PathBuf::from(path);
+    let parent = target.parent().ok_or_else(|| "Percorso di esportazione non valido.".to_string())?;
+    if !parent.is_dir() {
+        return Err("La cartella di esportazione non esiste.".into());
+    }
+    let mut file = File::create(&target).map_err(|error| format!("Impossibile creare il file: {error}"))?;
+    file.write_all(content.as_bytes()).map_err(|error| format!("Impossibile scrivere il file: {error}"))?;
+    file.sync_all().map_err(|error| format!("Impossibile sincronizzare il file: {error}"))
+}
+
+fn undo_history_index(app: AppHandle, mut history: Vec<HistoryEntry>, index: usize) -> Result<RenameResult, String> {
     let original = history[index].clone();
     let inverse: Vec<RenameOperation> = original
         .operations

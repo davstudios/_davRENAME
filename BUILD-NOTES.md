@@ -1,12 +1,11 @@
-# Build notes — _davRENAME v1.0.0
+# Build notes — _davRENAME v1.1.0
 
 La codebase è predisposta per Windows, macOS e Linux.
 
 ## Verifiche eseguite
 
 - sintassi JavaScript: OK
-- parsing CSS: OK
-- test motore rinomina: 11/11 PASS
+- test automatici complessivi: 19/19 PASS
 - audit commenti nei sorgenti JS/CSS/Rust/HTML: PASS
 - configurazioni JSON: valide
 - icone PNG/ICO/ICNS: presenti

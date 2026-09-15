@@ -54,9 +54,12 @@ IMG_0184.JPG  →  roma-003.jpg
 - modifica dell'estensione come operazione di rinomina;
 - rilevamento delle collisioni;
 - validazione dei nomi specifica per Windows, macOS e Linux;
-- Undo dell'ultima operazione;
+- Undo di più operazioni compatibili direttamente dalla cronologia;
 - interfaccia in italiano e inglese;
 - tema Sistema, Chiaro e Scuro.
+- preset di regole integrati e personalizzati salvabili;
+- filtri rapidi per estensione e cartella;
+- esportazione del dry run in CSV prima della rinomina;
 
 > **Nota:** cambiare l'estensione rinomina il file, ma non ne converte il formato. Per esempio, rinominare `foto.png` in `foto.jpg` non trasforma un PNG in JPEG.
 
@@ -186,9 +189,12 @@ IMG_0184.JPG  →  rome-003.jpg
 - extension changes as a rename operation;
 - collision detection;
 - OS-specific filename validation for Windows, macOS and Linux;
-- Undo for the latest operation;
+- multi-level Undo for compatible operations directly from history;
 - Italian and English interface;
 - System, Light and Dark themes.
+- built-in and custom savable rule presets;
+- quick filters by extension and folder;
+- dry-run CSV export before renaming;
 
 > **Note:** changing a file extension only renames the file; it does not convert its format. For example, renaming `photo.png` to `photo.jpg` does not convert a PNG into a JPEG.
 

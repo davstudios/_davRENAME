@@ -3,9 +3,10 @@ import './motion.css';
 import { buildPreview, operationsFromPreview } from './rename-engine.js';
 import { invoke } from '@tauri-apps/api/core';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
-import { open, confirm, message } from '@tauri-apps/plugin-dialog';
+import { open, confirm, message, save } from '@tauri-apps/plugin-dialog';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { historyTitle, historyMeta } from './history-i18n.js';
+import { dryRunCsv, extensionChoices, filterFiles, folderChoices, instantiatePreset, presetRules } from './workspace-utils.js';
 
 const icons = {
   folder: '<svg viewBox="0 0 24 24"><path d="M3 6.5h6l2 2h10v9.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 8.5v-2a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2"/></svg>',
@@ -24,6 +25,38 @@ const icons = {
   globe: '<svg class="globe-icon" viewBox="0 0 390 390" role="img" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M195,0C87.305,0,0,87.304,0,195s87.305,195,195,195s195-87.304,195-195S302.695,0,195,0z M119.524,45.678c-3.493,4.838-6.838,10.033-10.007,15.6c-4.841,8.503-9.16,17.656-12.945,27.33c-8.064-2.22-16.089-4.713-24.064-7.483C85.91,66.718,101.813,54.667,119.524,45.678z M52.298,107.694c11.438,4.293,22.976,8.056,34.591,11.293c-4.78,18.934-7.744,39.182-8.745,60.087h-49.72C30.888,153.108,39.305,128.852,52.298,107.694z M52.298,282.306c-12.994-21.159-21.411-45.414-23.874-71.38h49.72c1.002,20.905,3.965,41.153,8.745,60.087C75.274,274.25,63.736,278.013,52.298,282.306z M72.508,308.876c7.975-2.77,16-5.265,24.063-7.483c3.786,9.674,8.105,18.827,12.946,27.33c3.168,5.566,6.514,10.762,10.007,15.6C101.813,335.333,85.91,323.283,72.508,308.876z M179.074,354.07c-20.393-7.648-38.458-29.593-51.05-59.894c16.931-3.125,33.977-5.059,51.05-5.8V354.07z M179.074,256.454c-20.448,0.818-40.862,3.221-61.117,7.191c-4.16-16.355-6.908-34.13-7.915-52.72h69.032V256.454z M179.074,179.074h-69.032c1.007-18.59,3.755-36.365,7.915-52.72c20.254,3.971,40.669,6.373,61.117,7.191V179.074z M179.074,101.623c-17.073-0.741-34.118-2.675-51.05-5.8c12.592-30.301,30.657-52.245,51.05-59.894V101.623z M337.703,107.697c12.993,21.157,21.409,45.412,23.872,71.377h-49.72c-1.001-20.903-3.965-41.151-8.744-60.083C314.727,115.754,326.266,111.992,337.703,107.697z M317.495,81.128c-7.975,2.77-16,5.265-24.065,7.484c-3.786-9.676-8.105-18.831-12.947-27.335c-3.169-5.566-6.514-10.762-10.006-15.6C288.189,54.668,304.092,66.72,317.495,81.128z M210.926,35.93c20.393,7.648,38.459,29.595,51.051,59.898c-16.931,3.124-33.977,5.057-51.051,5.797V35.93z M210.926,133.547c20.45-0.817,40.865-3.219,61.118-7.188c4.16,16.354,6.907,34.128,7.914,52.716h-69.032V133.547z M210.926,210.926h69.032c-1.007,18.588-3.754,36.362-7.914,52.716c-20.253-3.97-40.668-6.371-61.118-7.189V210.926z M210.926,354.07v-65.694c17.075,0.741,34.121,2.673,51.051,5.798C249.385,324.475,231.319,346.422,210.926,354.07z M270.477,344.322c3.493-4.838,6.838-10.033,10.006-15.6c4.842-8.504,9.161-17.659,12.947-27.334c8.064,2.22,16.089,4.714,24.065,7.484C304.092,323.28,288.189,335.332,270.477,344.322z M337.703,282.304c-11.437-4.296-22.976-8.058-34.591-11.296c4.779-18.932,7.742-39.179,8.744-60.082h49.72C359.112,236.891,350.696,261.146,337.703,282.304z"/></svg>',
   coffee: '<svg class="coffee-icon" width="24" height="24" viewBox="0 0 24 24" role="img" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="m20.216 6.415-.132-.666c-.119-.598-.388-1.163-1.001-1.379-.197-.069-.42-.098-.57-.241-.152-.143-.196-.366-.231-.572-.065-.378-.125-.756-.192-1.133-.057-.325-.102-.69-.25-.987-.195-.4-.597-.634-.996-.788a5.723 5.723 0 0 0-.626-.194c-1-.263-2.05-.36-3.077-.416a25.834 25.834 0 0 0-3.7.062c-.915.083-1.88.184-2.75.5-.318.116-.646.256-.888.501-.297.302-.393.77-.177 1.146.154.267.415.456.692.58.36.162.737.284 1.123.366 1.075.238 2.189.331 3.287.37 1.218.05 2.437.01 3.65-.118.299-.033.598-.073.896-.119.352-.054.578-.513.474-.834-.124-.383-.457-.531-.834-.473-.466.074-.96.108-1.382.146-1.177.08-2.358.082-3.536.006a22.228 22.228 0 0 1-1.157-.107c-.086-.01-.18-.025-.258-.036-.243-.036-.484-.08-.724-.13-.111-.027-.111-.185 0-.212h.005c.277-.06.557-.108.838-.147h.002c.131-.009.263-.032.394-.048a25.076 25.076 0 0 1 3.426-.12c.674.019 1.347.067 2.017.144l.228.031c.267.04.533.088.798.145.392.085.895.113 1.07.542.055.137.08.288.111.431l.319 1.484a.237.237 0 0 1-.199.284h-.003c-.037.006-.075.01-.112.015a36.704 36.704 0 0 1-4.743.295 37.059 37.059 0 0 1-4.699-.304c-.14-.017-.293-.042-.417-.06-.326-.048-.649-.108-.973-.161-.393-.065-.768-.032-1.123.161-.29.16-.527.404-.675.701-.154.316-.199.66-.267 1-.069.34-.176.707-.135 1.056.087.753.613 1.365 1.37 1.502a39.69 39.69 0 0 0 11.343.376.483.483 0 0 1 .535.53l-.071.697-1.018 9.907c-.041.41-.047.832-.125 1.237-.122.637-.553 1.028-1.182 1.171-.577.131-1.165.2-1.756.205-.656.004-1.31-.025-1.966-.022-.699.004-1.556-.06-2.095-.58-.475-.458-.54-1.174-.605-1.793l-.731-7.013-.322-3.094c-.037-.351-.286-.695-.678-.678-.336.015-.718.3-.678.679l.228 2.185.949 9.112c.147 1.344 1.174 2.068 2.446 2.272.742.12 1.503.144 2.257.156.966.016 1.942.053 2.892-.122 1.408-.258 2.465-1.198 2.616-2.657.34-3.332.683-6.663 1.024-9.995l.215-2.087a.484.484 0 0 1 .39-.426c.402-.078.787-.212 1.074-.518.455-.488.546-1.124.385-1.766zm-1.478.772c-.145.137-.363.201-.578.233-2.416.359-4.866.54-7.308.46-1.748-.06-3.477-.254-5.207-.498-.17-.024-.353-.055-.47-.18-.22-.236-.111-.71-.054-.995.052-.26.152-.609.463-.646.484-.057 1.046.148 1.526.22.577.088 1.156.159 1.737.212 2.48.226 5.002.19 7.472-.14.45-.06.899-.13 1.345-.21.399-.072.84-.206 1.08.206.166.281.188.657.162.974a.544.544 0 0 1-.169.364zm-6.159 3.9c-.862.37-1.84.788-3.109.788a5.884 5.884 0 0 1-1.569-.217l.877 9.004c.065.78.717 1.38 1.5 1.38 0 0 1.243.065 1.658.065.447 0 1.786-.065 1.786-.065.783 0 1.434-.6 1.499-1.38l.94-9.95a3.996 3.996 0 0 0-1.322-.238c-.826 0-1.491.284-2.26.613z"/></svg>'
 };
+
+const builtInPresets = [
+  {
+    id: 'photos-sequential',
+    it: 'Foto sequenziali',
+    en: 'Sequential photos',
+    rules: [
+      { type: 'template', enabled: true, pattern: '{exif}-{counter}.{ext}', start: 1, digits: 3, dateFormat: 'YYYY-MM-DD' }
+    ]
+  },
+  {
+    id: 'clean-names',
+    it: 'Pulizia nomi',
+    en: 'Clean filenames',
+    rules: [
+      { type: 'replace', enabled: true, find: '[_\\s]+', replace: '-', regex: true, caseSensitive: false },
+      { type: 'trim', enabled: true, collapseSpaces: true, replacement: ' ' },
+      { type: 'case', enabled: true, mode: 'lower' }
+    ]
+  },
+  {
+    id: 'web-assets',
+    it: 'Asset web',
+    en: 'Web assets',
+    rules: [
+      { type: 'replace', enabled: true, find: '[^a-zA-Z0-9]+', replace: '-', regex: true, caseSensitive: false },
+      { type: 'replace', enabled: true, find: '^-+|-+$', replace: '', regex: true, caseSensitive: true },
+      { type: 'case', enabled: true, mode: 'lower' },
+      { type: 'trim', enabled: true, collapseSpaces: true, replacement: '-' }
+    ]
+  }
+];
 
 const defaultRules = [
   { id: crypto.randomUUID(), type: 'replace', enabled: true, find: 'IMG_', replace: '', regex: false, caseSensitive: false },
@@ -44,7 +77,10 @@ const state = {
   busy: false,
   dragOver: false,
   lastResult: null,
-  previewPage: 0
+  previewPage: 0,
+  filters: { extension: 'all', folder: 'all' },
+  customPresets: JSON.parse(localStorage.getItem('davrename-presets') || '[]'),
+  presetSelection: ''
 };
 
 const app = document.querySelector('#app');
@@ -54,6 +90,7 @@ function t(it, en) { return state.settings.language === 'en' ? en : it; }
 function saveState() {
   localStorage.setItem('davrename-rules', JSON.stringify(state.rules));
   localStorage.setItem('davrename-settings', JSON.stringify(state.settings));
+  localStorage.setItem('davrename-presets', JSON.stringify(state.customPresets));
 }
 
 function applyTheme() {
@@ -100,7 +137,9 @@ function setVisualSetting(key, value, kind) {
 function render(options = {}) {
   const motion = options.motion || 'none';
   applyTheme();
-  const preview = buildPreview(state.files, state.rules, state.platform);
+  normalizeActiveFilters();
+  const visibleFiles = filterFiles(state.files, state.filters);
+  const preview = buildPreview(visibleFiles, state.rules, state.platform);
   app.innerHTML = `
     <div class="shell" data-motion-mode="${motion}">
       <aside class="sidebar">
@@ -116,7 +155,7 @@ function render(options = {}) {
         </div>
       </aside>
       <main class="main ${motion !== 'none' ? 'motion-main' : ''}">
-        ${state.page === 'rename' ? renderRename(preview) : state.page === 'history' ? renderHistory() : renderSettings()}
+        ${state.page === 'rename' ? renderRename(preview, visibleFiles) : state.page === 'history' ? renderHistory() : renderSettings()}
       </main>
     </div>
     <div id="toast-region" aria-live="polite" aria-atomic="true"></div>
@@ -124,11 +163,18 @@ function render(options = {}) {
   bindEvents(preview);
 }
 
+function normalizeActiveFilters() {
+  const extensions = extensionChoices(state.files);
+  const folders = folderChoices(state.files);
+  if (state.filters.extension !== 'all' && !extensions.includes(state.filters.extension)) state.filters.extension = 'all';
+  if (state.filters.folder !== 'all' && !folders.includes(state.filters.folder)) state.filters.folder = 'all';
+}
+
 function navButton(page, icon, label) {
   return `<button class="nav-item ${state.page === page ? 'active' : ''}" data-page="${page}">${icon}<span>${label}</span></button>`;
 }
 
-function renderRename(preview) {
+function renderRename(preview, visibleFiles) {
   const hasFiles = state.files.length > 0;
   return `
     <header class="topbar">
@@ -142,7 +188,7 @@ function renderRename(preview) {
       </div>
     </header>
     <section class="workspace ${hasFiles ? 'has-files' : ''}">
-      ${hasFiles ? renderWorkspace(preview) : renderEmptyState()}
+      ${hasFiles ? renderWorkspace(preview, visibleFiles) : renderEmptyState()}
     </section>
   `;
 }
@@ -160,19 +206,39 @@ function renderEmptyState() {
     </div>
     <div class="trust-row">
       <div><strong>${t('Anteprima live','Live preview')}</strong><span>${t('Controlla ogni nome prima di applicarlo.','Check every name before applying it.')}</span></div>
-      <div><strong>${t('Undo integrato','Built-in undo')}</strong><span>${t('Ripristina l’ultima operazione in sicurezza.','Safely restore the last operation.')}</span></div>
+      <div><strong>${t('Cronologia Undo','Undo history')}</strong><span>${t('Ripristina in sicurezza più operazioni compatibili.','Safely restore multiple compatible operations.')}</span></div>
       <div><strong>${t('Solo locale','Local only')}</strong><span>${t('I file non lasciano mai il computer.','Your files never leave the computer.')}</span></div>
     </div>
   </div>`;
 }
 
-function renderWorkspace(preview) {
+function renderWorkspace(preview, visibleFiles) {
   const errors = preview.invalidCount + preview.ruleErrors.length;
+  const extensions = extensionChoices(state.files);
+  const folders = folderChoices(state.files);
+  const filtered = visibleFiles.length !== state.files.length;
+  const preset = state.presetSelection;
+  const customSelected = preset.startsWith('custom:');
   return `<div class="workspace-grid">
     <section class="panel rules-panel">
       <div class="panel-head">
         <div><div class="eyebrow">${t('Pipeline','Pipeline')}</div><h2>${t('Regole','Rules')}</h2></div>
         <button class="button compact secondary" id="add-rule">${icons.plus}${t('Aggiungi','Add')}</button>
+      </div>
+      <div class="preset-box">
+        <div class="preset-row">
+          <select id="preset-select" aria-label="${t('Preset regole','Rule preset')}">
+            <option value="">${t('Scegli preset…','Choose preset…')}</option>
+            <optgroup label="${t('DAV integrati','Built-in DAV')}">${builtInPresets.map((item) => `<option value="builtin:${item.id}" ${preset === `builtin:${item.id}` ? 'selected' : ''}>${escapeHtml(t(item.it, item.en))}</option>`).join('')}</optgroup>
+            ${state.customPresets.length ? `<optgroup label="${t('I tuoi preset','Your presets')}">${state.customPresets.map((item) => `<option value="custom:${item.id}" ${preset === `custom:${item.id}` ? 'selected' : ''}>${escapeHtml(item.name)}</option>`).join('')}</optgroup>` : ''}
+          </select>
+          <button class="button compact secondary" id="apply-preset" ${preset ? '' : 'disabled'}>${t('Applica','Apply')}</button>
+          <button class="icon-button" id="delete-preset" ${customSelected ? '' : 'disabled'} title="${t('Elimina preset','Delete preset')}">${icons.trash}</button>
+        </div>
+        <div class="preset-save-row">
+          <input id="preset-name" maxlength="48" placeholder="${t('Nome nuovo preset','New preset name')}" aria-label="${t('Nome nuovo preset','New preset name')}">
+          <button class="button compact secondary" id="save-preset">${t('Salva regole','Save rules')}</button>
+        </div>
       </div>
       <div class="rule-list" id="rule-list">
         ${state.rules.map((rule, index) => renderRule(rule, index)).join('')}
@@ -181,8 +247,14 @@ function renderWorkspace(preview) {
     </section>
     <section class="panel preview-panel">
       <div class="panel-head preview-head">
-        <div><div class="eyebrow">${t('Anteprima','Preview')}</div><h2>${state.files.length} ${t('file selezionati','files selected')}</h2></div>
+        <div><div class="eyebrow">${t('Anteprima','Preview')}</div><h2>${filtered ? `${visibleFiles.length} / ${state.files.length}` : state.files.length} ${t('file selezionati','files selected')}</h2></div>
         <div class="preview-actions"><button class="text-button danger" id="clear-files">${t('Rimuovi tutti','Clear all')}</button></div>
+      </div>
+      <div class="filter-bar">
+        <label><span>${t('Estensione','Extension')}</span><select id="file-extension-filter"><option value="all">${t('Tutte','All')}</option>${extensions.map((extension) => `<option value="${escapeAttr(extension)}" ${state.filters.extension === extension ? 'selected' : ''}>.${escapeHtml(extension)}</option>`).join('')}</select></label>
+        <label><span>${t('Cartella','Folder')}</span><select id="file-folder-filter"><option value="all">${t('Tutte le cartelle','All folders')}</option>${folders.map((folder) => `<option value="${escapeAttr(folder)}" ${state.filters.folder === folder ? 'selected' : ''}>${escapeHtml(folder)}</option>`).join('')}</select></label>
+        <button class="button compact secondary" id="clear-filters" ${filtered ? '' : 'disabled'}>${t('Azzera filtri','Clear filters')}</button>
+        <button class="button compact secondary" id="export-dry-run" ${preview.rows.length ? '' : 'disabled'}>${t('Esporta dry run','Export dry run')}</button>
       </div>
       ${preview.ruleErrors.length ? `<div class="alert error">${preview.ruleErrors.join('<br>')}</div>` : ''}
       <div class="table-wrap">
@@ -275,7 +347,7 @@ function ruleFields(rule) {
 function renderHistory() {
   return `<header class="topbar"><div><div class="eyebrow">${t('Registro locale','Local log')}</div><h1>${t('Attività','Activity')}</h1></div><button class="button secondary" id="refresh-history">${t('Aggiorna','Refresh')}</button></header>
   <section class="history-page panel">
-    ${state.history.length ? state.history.map((h, i) => { const undoIndex = state.history.findIndex(x => !x.undone); const count = h.operations.length; return `<div class="history-item"><div><strong>${escapeHtml(historyTitle(state.settings.language, count))}</strong><span>${escapeHtml(historyMeta(state.settings.language, h.timestamp, count))}</span></div>${i === undoIndex ? `<button class="button secondary compact" id="undo-last">${icons.undo}${t('Annulla','Undo')}</button>` : h.undone ? `<span class="status muted">${t('Annullata','Undone')}</span>` : ''}</div>`; }).join('') : `<div class="empty-mini"><h2>${t('Nessuna attività','No activity yet')}</h2><p>${t('Le operazioni completate appariranno qui e resteranno sul tuo computer.','Completed operations will appear here and stay on your computer.')}</p></div>`}
+    ${state.history.length ? state.history.map((h) => { const count = h.operations.length; return `<div class="history-item"><div><strong>${escapeHtml(historyTitle(state.settings.language, count))}</strong><span>${escapeHtml(historyMeta(state.settings.language, h.timestamp, count))}</span></div>${h.undone ? `<span class="status muted">${t('Annullata','Undone')}</span>` : `<button class="button secondary compact" data-undo-id="${escapeAttr(h.id)}">${icons.undo}${t('Annulla','Undo')}</button>`}</div>`; }).join('') : `<div class="empty-mini"><h2>${t('Nessuna attività','No activity yet')}</h2><p>${t('Le operazioni completate appariranno qui e resteranno sul tuo computer.','Completed operations will appear here and stay on your computer.')}</p></div>`}
   </section>`;
 }
 
@@ -290,7 +362,7 @@ function renderSettings() {
       <div class="setting-control"><span class="setting-control-label">${t('Tema','Theme')}</span>${settingSelect('setting-theme',state.settings.theme,[['system',t('Sistema','System')],['light',t('Chiaro','Light')],['dark',t('Scuro','Dark')]])}</div>
       <div class="setting-control"><span class="setting-control-label">${t('Lingua','Language')}</span>${settingSelect('setting-language',state.settings.language,[['it','Italiano'],['en','English']])}</div>
     </div>
-    <div class="panel about-card"><div class="brand big"><span>_dav</span>RENAME</div><p>${t('Rinomina batch locale, sicura e reversibile. Nessun account, nessun upload, nessuna telemetria di default.','Local, safe and reversible batch renaming. No account, no uploads, no telemetry by default.')}</p><div class="about-links"><button class="website-button" data-action="website">${icons.globe}<span>davstudios.it</span></button><button class="coffee-button wide" data-action="coffee">${icons.coffee}<span>${t('Comprami Un Caffè','Buy Me A Coffee')}</span></button></div><div class="version">v1.0.0 · Open source</div></div>
+    <div class="panel about-card"><div class="brand big"><span>_dav</span>RENAME</div><p>${t('Rinomina batch locale, sicura e reversibile. Nessun account, nessun upload, nessuna telemetria di default.','Local, safe and reversible batch renaming. No account, no uploads, no telemetry by default.')}</p><div class="about-links"><button class="website-button" data-action="website">${icons.globe}<span>davstudios.it</span></button><button class="coffee-button wide" data-action="coffee">${icons.coffee}<span>${t('Comprami Un Caffè','Buy Me A Coffee')}</span></button></div><div class="version">v1.1.0 · Open source</div></div>
   </section>`;
 }
 
@@ -401,12 +473,20 @@ function bindEvents(preview) {
   }));
   for (const id of ['open-files','empty-open-files']) document.querySelector(`#${id}`)?.addEventListener('click', pickFiles);
   for (const id of ['open-folder','empty-open-folder']) document.querySelector(`#${id}`)?.addEventListener('click', pickFolder);
-  document.querySelector('#clear-files')?.addEventListener('click', () => { state.files=[]; state.previewPage=0; render({ motion: 'content' }); });
+  document.querySelector('#clear-files')?.addEventListener('click', () => { state.files=[]; state.filters={ extension:'all', folder:'all' }; state.previewPage=0; render({ motion: 'content' }); });
   document.querySelector('#add-rule')?.addEventListener('click', showRuleMenu);
-  document.querySelector('#reset-rules')?.addEventListener('click', () => { state.rules = structuredClone(defaultRules).map(r => ({...r,id:crypto.randomUUID()})); saveState(); render({ motion: 'rules' }); });
+  document.querySelector('#reset-rules')?.addEventListener('click', () => { state.rules = structuredClone(defaultRules).map(r => ({...r,id:crypto.randomUUID()})); state.presetSelection=''; saveState(); render({ motion: 'rules' }); });
+  document.querySelector('#preset-select')?.addEventListener('change', (event) => { state.presetSelection=event.target.value; render({ motion: 'content' }); });
+  document.querySelector('#apply-preset')?.addEventListener('click', applySelectedPreset);
+  document.querySelector('#save-preset')?.addEventListener('click', saveCurrentPreset);
+  document.querySelector('#delete-preset')?.addEventListener('click', deleteSelectedPreset);
+  document.querySelector('#file-extension-filter')?.addEventListener('change', (event) => { state.filters.extension=event.target.value; state.previewPage=0; render({ motion: 'content' }); });
+  document.querySelector('#file-folder-filter')?.addEventListener('change', (event) => { state.filters.folder=event.target.value; state.previewPage=0; render({ motion: 'content' }); });
+  document.querySelector('#clear-filters')?.addEventListener('click', () => { state.filters={ extension:'all', folder:'all' }; state.previewPage=0; render({ motion: 'content' }); });
+  document.querySelector('#export-dry-run')?.addEventListener('click', () => exportDryRun(preview));
   document.querySelector('#rename-button')?.addEventListener('click', () => executeRename(preview));
   document.querySelector('#refresh-history')?.addEventListener('click', loadHistory);
-  document.querySelector('#undo-last')?.addEventListener('click', undoLast);
+  document.querySelectorAll('[data-undo-id]').forEach((button) => button.addEventListener('click', () => undoHistoryEntry(button.dataset.undoId)));
   document.querySelector('#page-prev')?.addEventListener('click', () => { state.previewPage = Math.max(0, state.previewPage - 1); render(); });
   document.querySelector('#page-next')?.addEventListener('click', () => { const pages = Math.max(1, Math.ceil(preview.rows.length / 250)); state.previewPage = Math.min(pages - 1, state.previewPage + 1); render(); });
 
@@ -421,6 +501,64 @@ function bindEvents(preview) {
   document.querySelector('#setting-confirm')?.addEventListener('change', e => { state.settings.verifyBeforeRename=e.target.checked; saveState(); });
   document.querySelector('#setting-recursive')?.addEventListener('change', e => { state.settings.recursiveFolders=e.target.checked; saveState(); });
   bindSettingSelects();
+}
+
+function applySelectedPreset() {
+  const key = state.presetSelection;
+  if (!key) return;
+  const [kind, id] = key.split(':');
+  const source = kind === 'builtin' ? builtInPresets.find((item) => item.id === id)?.rules : state.customPresets.find((item) => item.id === id)?.rules;
+  if (!source) return;
+  state.rules = instantiatePreset(source, () => crypto.randomUUID());
+  state.previewPage = 0;
+  saveState();
+  render({ motion: 'rules' });
+  toast(t('Preset applicato.','Preset applied.'), 'success');
+}
+
+function saveCurrentPreset() {
+  const input = document.querySelector('#preset-name');
+  const name = String(input?.value || '').trim();
+  if (!name) {
+    toast(t('Inserisci un nome per il preset.','Enter a name for the preset.'), 'warning');
+    input?.focus();
+    return;
+  }
+  if (state.customPresets.some((item) => item.name.toLocaleLowerCase() === name.toLocaleLowerCase())) {
+    toast(t('Esiste già un preset con questo nome.','A preset with this name already exists.'), 'warning');
+    return;
+  }
+  const item = { id: crypto.randomUUID(), name, rules: presetRules(state.rules) };
+  state.customPresets.push(item);
+  state.presetSelection = `custom:${item.id}`;
+  saveState();
+  render({ motion: 'content' });
+  toast(t('Preset salvato.','Preset saved.'), 'success');
+}
+
+async function deleteSelectedPreset() {
+  if (!state.presetSelection.startsWith('custom:')) return;
+  const id = state.presetSelection.slice(7);
+  const item = state.customPresets.find((preset) => preset.id === id);
+  if (!item) return;
+  const ok = await confirm(t(`Eliminare il preset “${item.name}”?`,`Delete the preset “${item.name}”?`), { title: '_davRENAME', kind: 'warning', okLabel: t('Elimina','Delete'), cancelLabel: t('Annulla','Cancel') });
+  if (!ok) return;
+  state.customPresets = state.customPresets.filter((preset) => preset.id !== id);
+  state.presetSelection = '';
+  saveState();
+  render({ motion: 'content' });
+}
+
+async function exportDryRun(preview) {
+  if (!preview.rows.length) return;
+  const target = await save({ title: '_davRENAME — ' + t('Esporta dry run','Export dry run'), defaultPath: '_davRENAME-dry-run.csv', filters: [{ name: 'CSV', extensions: ['csv'] }] });
+  if (!target) return;
+  try {
+    await invoke('write_text_file', { path: target, content: dryRunCsv(preview.rows) });
+    toast(t('Dry run esportato.','Dry run exported.'), 'success');
+  } catch (error) {
+    await message(String(error), { title: '_davRENAME', kind: 'error' });
+  }
 }
 
 function moveRule(id, delta) {
@@ -500,7 +638,10 @@ async function executeRename(preview) {
     const result = await invoke('execute_rename', { operations });
     state.lastResult = result;
     try {
-      state.files = await invoke('scan_paths', { paths: result.operations.map(op => op.newPath), recursive: false });
+      const renamedSources = new Set(result.operations.map((op) => normalizeForKey(op.oldPath)));
+      const unaffected = state.files.filter((file) => !renamedSources.has(normalizeForKey(file.path)));
+      const renamed = await invoke('scan_paths', { paths: result.operations.map(op => op.newPath), recursive: false });
+      state.files = [...unaffected, ...renamed].sort((a, b) => String(a.name).localeCompare(String(b.name), undefined, { numeric: true, sensitivity: 'base' }));
     } catch {
       state.files = [];
     }
@@ -517,12 +658,18 @@ async function loadHistory(shouldRender = true) {
   if (shouldRender) { state.page = 'history'; render({ motion: 'page' }); }
 }
 
-async function undoLast() {
-  if (!state.history.length) return;
-  const ok = await confirm(t('Ripristinare i nomi precedenti dell’ultima operazione?','Restore the previous names from the last operation?'), { title: '_davRENAME', kind: 'warning' });
+async function undoHistoryEntry(id) {
+  if (!id) return;
+  const ok = await confirm(t('Ripristinare i nomi precedenti di questa operazione? Se file successivi dipendono da questi nomi, l’operazione verrà bloccata in sicurezza.','Restore the previous names from this operation? If later files depend on these names, the operation will be safely blocked.'), { title: '_davRENAME', kind: 'warning', okLabel: t('Annulla operazione','Undo operation'), cancelLabel: t('Chiudi','Close') });
   if (!ok) return;
   try {
-    const result = await invoke('undo_last');
+    const result = await invoke('undo_history_entry', { id });
+    try {
+      const restoredSources = new Set(result.operations.map((op) => normalizeForKey(op.oldPath)));
+      const unaffected = state.files.filter((file) => !restoredSources.has(normalizeForKey(file.path)));
+      const restored = await invoke('scan_paths', { paths: result.operations.map((op) => op.newPath), recursive: false });
+      state.files = [...unaffected, ...restored].sort((a, b) => String(a.name).localeCompare(String(b.name), undefined, { numeric: true, sensitivity: 'base' }));
+    } catch {}
     await loadHistory(false);
     toast(t(`${result.operations.length} file ripristinati.`,`Restored ${result.operations.length} files.`), 'success');
     render({ motion: 'page' });
