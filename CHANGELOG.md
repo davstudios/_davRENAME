@@ -1,6 +1,7 @@
 # Changelog
 
 ## 1.0.0
+- Cronologia attività localizzata dinamicamente: titolo, conteggio file e formato data seguono sempre la lingua attualmente selezionata, anche per operazioni create in precedenza.
 - Added localized Buy Me a Coffee support button in the sidebar with the supplied SVG icon and external browser opening.
 - Branding definitivo `_davRENAME`.
 - Motion system allineato al sito `_davstudios`.

@@ -2,13 +2,16 @@ _davRENAME v1.0.0
 
 JavaScript syntax: PASS
 CSS structural validation: PASS
-Automated tests: 12/12 PASS
+Automated tests: 14/14 PASS
 Windows collision behavior: PASS
 macOS conservative collision behavior: PASS
 Linux case-sensitive behavior: PASS
 Unix filename behavior: PASS
 Theme transition implementation: PASS
 Language transition implementation: PASS
+Activity history follows current language: PASS
+Activity date/count localization: PASS
+Legacy localized history titles ignored safely: PASS
 Animated Theme/Language custom dropdowns: PASS
 Keyboard and Escape handling for custom dropdowns: PASS
 Reduced-motion fallback: PASS

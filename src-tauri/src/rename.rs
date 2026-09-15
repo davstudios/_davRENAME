@@ -38,7 +38,6 @@ pub struct RenameOperation {
 pub struct HistoryEntry {
     id: String,
     timestamp: String,
-    title: String,
     operations: Vec<RenameOperation>,
     #[serde(default)]
     undone: bool,
@@ -107,7 +106,6 @@ pub fn execute_rename(app: AppHandle, operations: Vec<RenameOperation>) -> Resul
     let entry = HistoryEntry {
         id: id.clone(),
         timestamp: timestamp.clone(),
-        title: format!("Rinomina di {} file", operations.len()),
         operations: operations.clone(),
         undone: false,
     };
