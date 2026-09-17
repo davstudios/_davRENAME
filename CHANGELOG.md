@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.2
+
+- The version shown in the app now comes directly from the Tauri runtime instead of being hardcoded in the UI.
+- Added automatic tests that keep package.json, tauri.conf.json and Cargo.toml versions aligned.
+- Updated the GitHub release workflow to build the exact pushed or manually selected tag and validate its version before compiling.
+
 ## 1.1.0
 
 - Added built-in and custom savable rule presets.

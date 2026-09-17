@@ -2,6 +2,7 @@ import './styles.css';
 import './motion.css';
 import { buildPreview, operationsFromPreview } from './rename-engine.js';
 import { invoke } from '@tauri-apps/api/core';
+import { getVersion } from '@tauri-apps/api/app';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { open, confirm, message, save } from '@tauri-apps/plugin-dialog';
 import { openUrl } from '@tauri-apps/plugin-opener';
@@ -80,7 +81,8 @@ const state = {
   previewPage: 0,
   filters: { extension: 'all', folder: 'all' },
   customPresets: JSON.parse(localStorage.getItem('davrename-presets') || '[]'),
-  presetSelection: ''
+  presetSelection: '',
+  appVersion: ''
 };
 
 const app = document.querySelector('#app');
@@ -362,7 +364,7 @@ function renderSettings() {
       <div class="setting-control"><span class="setting-control-label">${t('Tema','Theme')}</span>${settingSelect('setting-theme',state.settings.theme,[['system',t('Sistema','System')],['light',t('Chiaro','Light')],['dark',t('Scuro','Dark')]])}</div>
       <div class="setting-control"><span class="setting-control-label">${t('Lingua','Language')}</span>${settingSelect('setting-language',state.settings.language,[['it','Italiano'],['en','English']])}</div>
     </div>
-    <div class="panel about-card"><div class="brand big"><span>_dav</span>RENAME</div><p>${t('Rinomina batch locale, sicura e reversibile. Nessun account, nessun upload, nessuna telemetria di default.','Local, safe and reversible batch renaming. No account, no uploads, no telemetry by default.')}</p><div class="about-links"><button class="website-button" data-action="website">${icons.globe}<span>davstudios.it</span></button><button class="coffee-button wide" data-action="coffee">${icons.coffee}<span>${t('Comprami Un Caffè','Buy Me A Coffee')}</span></button></div><div class="version">v1.1.0 · Open source</div></div>
+    <div class="panel about-card"><div class="brand big"><span>_dav</span>RENAME</div><p>${t('Rinomina batch locale, sicura e reversibile. Nessun account, nessun upload, nessuna telemetria di default.','Local, safe and reversible batch renaming. No account, no uploads, no telemetry by default.')}</p><div class="about-links"><button class="website-button" data-action="website">${icons.globe}<span>davstudios.it</span></button><button class="coffee-button wide" data-action="coffee">${icons.coffee}<span>${t('Comprami Un Caffè','Buy Me A Coffee')}</span></button></div><div class="version">${state.appVersion ? `v${escapeHtml(state.appVersion)} · ` : ''}Open source</div></div>
   </section>`;
 }
 
@@ -707,4 +709,15 @@ document.addEventListener('keydown', (event) => {
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
   if (state.settings.theme === 'system') runUiTransition('theme', () => render());
 });
-applyTheme(); render({ motion: 'startup' }); initDragDrop();
+async function initializeApp() {
+  try {
+    state.appVersion = await getVersion();
+  } catch {
+    state.appVersion = '';
+  }
+  applyTheme();
+  render({ motion: 'startup' });
+  await initDragDrop();
+}
+
+initializeApp();

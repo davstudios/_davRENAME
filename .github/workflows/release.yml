@@ -1,10 +1,15 @@
 name: Release _davRENAME
 
 on:
-  workflow_dispatch:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to build, for example v1.1.2'
+        required: true
+        type: string
 
 jobs:
   publish:
@@ -23,6 +28,8 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
 
       - name: Install Linux dependencies
         if: matrix.platform == 'ubuntu-22.04'
@@ -34,6 +41,29 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
+
+      - name: Verify release versions
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const tag = process.env.RELEASE_TAG;
+          const expected = tag.replace(/^v/, '');
+          const packageVersion = JSON.parse(fs.readFileSync('package.json', 'utf8')).version;
+          const tauriVersion = JSON.parse(fs.readFileSync('src-tauri/tauri.conf.json', 'utf8')).version;
+          const cargoText = fs.readFileSync('src-tauri/Cargo.toml', 'utf8');
+          const cargoVersion = cargoText.match(/^version\s*=\s*"([^"]+)"/m)?.[1];
+          const versions = { packageVersion, tauriVersion, cargoVersion };
+          const mismatches = Object.entries(versions).filter(([, value]) => value !== expected);
+          if (mismatches.length) {
+            console.error(`Release tag ${tag} expects app version ${expected}.`);
+            for (const [name, value] of Object.entries(versions)) console.error(`${name}: ${value}`);
+            process.exit(1);
+          }
+          console.log(`Release versions are aligned on ${expected}.`);
+          NODE
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
@@ -56,9 +86,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: v__VERSION__
+          tagName: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
           releaseName: '_davRENAME v__VERSION__'
-          releaseBody: 'Download the installer for your operating system from the assets below.'
+          releaseBody: 'Stable release of _davRENAME. Download the installer for your operating system from the assets below.'
           releaseDraft: false
           prerelease: false
           generateReleaseNotes: true

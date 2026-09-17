@@ -1,13 +1,5 @@
-_davRENAME v1.1.0
-Tests: 19
-Passed: 19
-Failed: 0
+_davRENAME v1.1.2
 
-Validated areas:
-- rename engine and collision detection
-- Windows, macOS and Linux filename behavior
-- bilingual history rendering
-- extension and folder filtering
-- custom preset serialization and restore
-- dry-run CSV generation
-- source comment audit
+Automated test result: 21 passed, 0 failed.
+
+Coverage includes rename preview rules, platform filename validation, collision detection, EXIF date handling, localized history rendering, workspace filters, presets, CSV dry-run export, source comment audit, release version alignment, and automatic UI version loading from the Tauri runtime.

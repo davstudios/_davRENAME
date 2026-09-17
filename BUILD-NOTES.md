@@ -1,4 +1,4 @@
-# Build notes — _davRENAME v1.1.0
+# Build notes — _davRENAME v1.1.2
 
 La codebase è predisposta per Windows, macOS e Linux.
 
