@@ -102,9 +102,35 @@ I nomi e i contenuti dei file restano sul dispositivo.
 
 Le build di release vengono generate tramite GitHub Actions sui rispettivi sistemi operativi.
 
-## Installazione
+## Installazione delle release GitHub non firmate
 
-Per gli utenti finali, scarica il pacchetto adatto al tuo sistema dalla sezione **Releases** del repository e avvialo normalmente. Non è necessario installare Node.js, Rust o clonare il codice sorgente.
+Le release di `_davRENAME` sono distribuite direttamente tramite GitHub e, al momento, non utilizzano certificati commerciali di code signing o notarizzazione Apple. Il codice sorgente è disponibile pubblicamente con licenza MIT.
+
+### Windows
+
+Windows SmartScreen può mostrare l'avviso **“Windows ha protetto il PC”** perché l'installer non è firmato con un certificato di publisher attendibile. Se hai scaricato il file dalla repository GitHub ufficiale di `_davstudios`, seleziona **Ulteriori informazioni** e poi **Esegui comunque**.
+
+### macOS
+
+Gatekeeper può impedire la prima apertura perché l'app non è firmata con Developer ID e non è notarizzata da Apple. Dopo aver tentato di aprire l'app, vai in **Impostazioni di Sistema → Privacy e Sicurezza**, individua il messaggio relativo a `_davRENAME` e scegli **Apri comunque**.
+
+### Linux
+
+Per un'AppImage può essere necessario rendere il file eseguibile prima dell'avvio:
+
+```bash
+chmod +x _davRENAME*.AppImage
+```
+
+Scarica sempre le release dalla repository GitHub ufficiale di `_davstudios`. Quando viene pubblicato un hash SHA-256, puoi usarlo per verificare l'integrità del file scaricato.
+
+## Informazioni pacchetto
+
+- Developer / Publisher: `_davstudios`
+- Homepage: https://davstudios.it
+- Licenza: MIT
+- Bundle identifier: `studio.dav.rename`
+- Versione corrente: `26.10.1`
 
 ## Sviluppo locale
 
@@ -132,6 +158,10 @@ Gli artefatti vengono creati in `src-tauri/target/release/bundle/`.
 ## Tecnologia
 
 _davRENAME usa **Tauri 2** per l'app desktop, **Rust** per il backend e **JavaScript + Vite** per l'interfaccia. Il design e il motion system seguono l'identità visiva di `_davstudios`.
+
+## Note della release
+
+La v26.10.1 adotta il nuovo standard di versioning e packaging `_davstudios` senza modificare il motore di rinomina, l'interfaccia o la logica funzionale dell'app.
 
 ## Licenza
 
@@ -237,9 +267,35 @@ Your filenames and file contents stay on your device.
 
 Release builds are generated through GitHub Actions on the corresponding operating systems.
 
-## Installation
+## Installing unsigned GitHub releases
 
-For end users, download the package for your operating system from the repository's **Releases** section and launch it normally. Node.js, Rust, and the source repository are not required to use a compiled release.
+`_davRENAME` releases are distributed directly through GitHub and currently do not use a commercial Windows code-signing certificate or Apple Developer ID notarization. The source code is publicly available under the MIT License.
+
+### Windows
+
+Windows SmartScreen may display **“Windows protected your PC”** because the installer is not signed by a trusted publisher certificate. If you downloaded the file from the official `_davstudios` GitHub repository, choose **More info** and then **Run anyway**.
+
+### macOS
+
+Gatekeeper may block the first launch because the app is not signed with Developer ID and notarized by Apple. After attempting to open the app, go to **System Settings → Privacy & Security**, find the `_davRENAME` message and choose **Open Anyway**.
+
+### Linux
+
+An AppImage may need to be marked as executable before launch:
+
+```bash
+chmod +x _davRENAME*.AppImage
+```
+
+Always download releases from the official `_davstudios` GitHub repository. When a SHA-256 hash is published, you can use it to verify the integrity of the downloaded file.
+
+## Package information
+
+- Developer / Publisher: `_davstudios`
+- Homepage: https://davstudios.it
+- License: MIT
+- Bundle identifier: `studio.dav.rename`
+- Current version: `26.10.1`
 
 ## Local development
 
@@ -267,6 +323,10 @@ Build artifacts are created under `src-tauri/target/release/bundle/`.
 ## Technology
 
 _davRENAME uses **Tauri 2** for the desktop application, **Rust** for the backend, and **JavaScript + Vite** for the interface. Its visual language and motion system follow the `_davstudios` identity.
+
+## Release notes
+
+v26.10.1 adopts the new `_davstudios` versioning and packaging standard without changing the rename engine, interface or the application's functional logic.
 
 ## License
 

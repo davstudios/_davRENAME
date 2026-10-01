@@ -1,5 +1,18 @@
 # Changelog
 
+## 26.10.1
+
+- Adottato il nuovo standard di versioning `_davstudios` `YY.M.REVISIONE`.
+- Sincronizzata la versione `26.10.1` nei metadata npm, Tauri e Cargo.
+- Standardizzati publisher, homepage, copyright, licenza MIT, descrizioni del pacchetto e metadata Linux.
+- Mantenuto invariato l'identifier storico `studio.dav.rename`.
+- Aggiunte al README le istruzioni per le release non firmate su Windows, macOS e Linux.
+- Il workflow GitHub usa ora automaticamente la Description bilingue del commit associato al tag come descrizione della GitHub Release.
+- Aggiunta la verifica obbligatoria delle sezioni `🇮🇹` e `🇺🇸` prima della pubblicazione.
+- Rafforzato il workflow Linux contro repository Microsoft non raggiungibili.
+- Aggiunti controlli automatici sul contratto di packaging e release.
+- Nessuna modifica al motore di rinomina, all'interfaccia o alla logica funzionale dell'app.
+
 ## 1.1.2
 
 - The version shown in the app now comes directly from the Tauri runtime instead of being hardcoded in the UI.

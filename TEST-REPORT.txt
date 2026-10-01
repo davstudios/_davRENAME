@@ -1,5 +1,56 @@
-_davRENAME v1.1.2
+_davRENAME v26.10.1 — Test report
+Date: 2026-10-01
 
-Automated test result: 21 passed, 0 failed.
+Automated tests: 25/25 passed
+- Rename engine tests: passed
+- History localization tests: passed
+- Workspace utilities tests: passed
+- Source comment audit: passed
+- Package metadata contract: passed
+- GitHub Release bilingual-description contract: passed
+- Version synchronization: passed
+- Tauri icon-set contract: passed
 
-Coverage includes rename preview rules, platform filename validation, collision detection, EXIF date handling, localized history rendering, workspace filters, presets, CSV dry-run export, source comment audit, release version alignment, and automatic UI version loading from the Tauri runtime.
+Static validation:
+- src/*.js: syntax valid
+- tests/*.js: syntax valid
+- vite.config.js: syntax valid
+- package.json: valid JSON
+- package-lock.json: valid JSON
+- src-tauri/tauri.conf.json: valid JSON
+- src-tauri/capabilities/default.json: valid JSON
+- .github/workflows/release.yml: valid YAML
+
+Bundle metadata:
+- Version: 26.10.1
+- Public tag: v26.10.1
+- Publisher: _davstudios
+- Homepage: https://davstudios.it
+- License: MIT
+- Copyright: © 2026 _davstudios
+- Identifier preserved: studio.dav.rename
+- Category: Utility
+- Linux DEB section: utils
+- Linux DEB priority: optional
+
+Release workflow:
+- Windows x64 NSIS
+- macOS Universal DMG
+- Linux x64 AppImage and DEB
+- GitHub Release body is read from the tagged commit Description
+- Both 🇮🇹 and 🇺🇸 sections are required
+- Linux apt workflow hardened against unavailable Microsoft repositories
+
+Functional comparison:
+- src/, src-tauri/src/, vite.config.js and index.html were compared against the previous v26.10.1 package.
+- No functional differences were introduced by this metadata/release-standard update.
+
+Code signing:
+- No trusted commercial Windows code-signing certificate configured.
+- No Apple Developer ID/notarization configured.
+- README contains SmartScreen, Gatekeeper and AppImage guidance.
+
+Build environment:
+- Cargo/Rust is not available in this execution environment, so the native Tauri/Rust bundle was not compiled here.
+- A fresh npm dependency installation was attempted but exceeded the available execution timeout; no partial node_modules directory is included in the archive.
+- GitHub Actions remains responsible for native Windows, macOS and Linux release builds.

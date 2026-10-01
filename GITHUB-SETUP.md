@@ -1,31 +1,16 @@
-# GitHub setup
+# GitHub release setup
 
-## Creazione repository con GitHub Desktop
+1. Mantieni la repository pubblica.
+2. Inserisci in GitHub Desktop il Summary nel formato `_davRENAME v26.10.1`.
+3. Inserisci nella Description del commit le modifiche complete in entrambe le lingue, iniziando con `🇮🇹` e `🇺🇸`.
+4. Esegui il commit e `Push origin`.
+5. Crea e pubblica il tag della release:
 
-Impostare:
+```bash
+git tag -a v26.10.1 -m "Release _davRENAME v26.10.1"
+git push origin v26.10.1
+```
 
-- Name: `_davRENAME`
-- Local path: la cartella padre, ad esempio `C:\Users\_davstudios\Documents\GitHub`
-- Description: `Cross-platform bulk file renamer by _davstudios.`
-- Initialize this repository with a README: disattivato
-- Git ignore: `None`
-- License: `None`
+Il workflow `.github/workflows/release.yml` verifica che tag, `package.json`, Tauri e Cargo abbiano la stessa versione. La Description bilingue del commit associato al tag viene usata automaticamente come descrizione della GitHub Release.
 
-README, `.gitignore` e licenza MIT sono già inclusi nel progetto.
-
-Dopo la creazione, copiare il contenuto di questo progetto direttamente dentro la cartella repository `_davRENAME`, quindi creare il primo commit e pubblicare il repository su GitHub. Se il progetto deve essere open source, pubblicarlo come repository Public.
-
-## Prima release
-
-Dopo il push del progetto:
-
-1. Aprire la repository su GitHub.
-2. Aprire `Actions`.
-3. Selezionare `Release _davRENAME`.
-4. Usare `Run workflow`.
-5. Attendere le tre build.
-6. Aprire `Releases` per trovare gli installer pronti da scaricare.
-
-Per le release normali, creare e pushare un tag coerente con la versione dell’app, ad esempio `v1.1.2`. Il workflow verifica automaticamente che il tag corrisponda a `package.json`, `src-tauri/tauri.conf.json` e `src-tauri/Cargo.toml`.
-
-La modalità manuale `Run workflow` richiede invece un tag già esistente da ricostruire.
+La release viene pubblicata come stabile (`prerelease: false`) con gli asset Windows, macOS e Linux generati dai runner GitHub Actions.

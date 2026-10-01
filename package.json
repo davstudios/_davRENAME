@@ -1,6 +1,6 @@
 {
   "name": "davrename-app",
-  "version": "1.1.2",
+  "version": "26.10.1",
   "private": true,
   "type": "module",
   "description": "_davRENAME — safe local bulk file renaming for Windows, macOS and Linux.",
@@ -21,5 +21,8 @@
   "devDependencies": {
     "@tauri-apps/cli": "2.11.4",
     "vite": "8.2.2"
-  }
+  },
+  "author": "_davstudios",
+  "license": "MIT",
+  "homepage": "https://davstudios.it"
 }
