@@ -10,3 +10,4 @@ export function historyMeta(language, timestamp, count) {
   const fileLabel = language === 'en' ? (count === 1 ? 'file' : 'files') : 'file';
   return `${formattedDate} · ${count} ${fileLabel}`;
 }
+

@@ -1,5 +1,15 @@
 # Changelog
 
+## 26.10.2
+
+- Eseguita la repository normalization completa dell'intero pacchetto, aggiornando realmente tutti i file della release senza modifiche funzionali.
+- Sincronizzata la versione `26.10.2` in package.json, package-lock.json, configurazione Tauri, Cargo.toml e Cargo.lock.
+- Estesi i controlli automatici di versione a package-lock.json e Cargo.lock.
+- Reso esplicitamente robusto il parser di Cargo.lock sui checkout Windows con terminatori CRLF.
+- Rafforzato il workflow GitHub Actions con verifica completa dei manifest e lockfile prima della build.
+- Aggiornati in modo non visivo gli asset icona per associare anche i file binari al commit corrente preservando i pixel originali.
+- Nessuna modifica al motore di rinomina, all'interfaccia o alla logica funzionale dell'app.
+
 ## 26.10.1
 
 - Adottato il nuovo standard di versioning `_davstudios` `YY.M.REVISIONE`.
@@ -53,3 +63,4 @@
 ## 0.1.0
 
 - Prima versione multipiattaforma.
+

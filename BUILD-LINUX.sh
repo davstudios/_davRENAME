@@ -7,3 +7,4 @@ npm install --no-audit --no-fund
 npm run bundle
 echo
 echo "Build completata. Controlla: src-tauri/target/release/bundle/"
+

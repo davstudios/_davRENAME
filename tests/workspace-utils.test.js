@@ -36,3 +36,4 @@ test('exports a quoted dry run CSV', () => {
   assert.match(csv, /"rome,01.jpg"/);
   assert.match(csv, /"ready"/);
 });
+

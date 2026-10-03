@@ -1,6 +1,6 @@
 [package]
 name = "davrename"
-version = "26.10.1"
+version = "26.10.2"
 description = "_davRENAME desktop application"
 authors = ["_davstudios"]
 license = "MIT"
@@ -25,3 +25,4 @@ uuid = { version = "1", features = ["v4"] }
 walkdir = "2"
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
 kamadak-exif = "0.6.1"
+

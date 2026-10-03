@@ -658,7 +658,7 @@ dependencies = [
 
 [[package]]
 name = "davrename"
-version = "26.10.1"
+version = "26.10.2"
 dependencies = [
  "chrono",
  "kamadak-exif",
@@ -5184,3 +5184,4 @@ dependencies = [
  "syn 3.0.5",
  "winnow 1.0.4",
 ]
+

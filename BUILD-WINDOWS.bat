@@ -10,3 +10,4 @@ if errorlevel 1 (pause & exit /b 1)
 echo.
 echo Build completata. Controlla: src-tauri\target\release\bundle\
 pause
+

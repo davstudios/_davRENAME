@@ -8,3 +8,4 @@ call npm install --no-audit --no-fund || (pause & exit /b 1)
 echo Avvio _davRENAME...
 call npm run desktop
 if errorlevel 1 pause
+

@@ -1,4 +1,4 @@
-# Build notes — _davRENAME v26.10.1
+# Build notes — _davRENAME v26.10.2
 
 La codebase è predisposta per Windows, macOS e Linux.
 
@@ -32,3 +32,4 @@ I pacchetti Windows e macOS sono distribuiti senza un certificato commerciale Wi
 ## Limite dell'ambiente di generazione
 
 Rust/Cargo non è installato nell'ambiente usato per preparare questo archivio, quindi qui non sono stati prodotti installer nativi. È stato tentato anche un `npm ci` pulito, ma l'installazione ha superato il timeout disponibile; la directory parziale `node_modules` è stata rimossa dall'archivio. La pipeline GitHub inclusa installa le dipendenze, esegue i test e compila i bundle sui runner nativi.
+

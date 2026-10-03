@@ -1,7 +1,7 @@
-_davRENAME v26.10.1 — Test report
-Date: 2026-10-01
+_davRENAME v26.10.2 — Test report
+Date: 2026-10-03
 
-Automated tests: 25/25 passed
+Automated tests: 26/26 passed
 - Rename engine tests: passed
 - History localization tests: passed
 - Workspace utilities tests: passed
@@ -9,6 +9,7 @@ Automated tests: 25/25 passed
 - Package metadata contract: passed
 - GitHub Release bilingual-description contract: passed
 - Version synchronization: passed
+- Cargo.lock CRLF regression: passed
 - Tauri icon-set contract: passed
 
 Static validation:
@@ -22,8 +23,8 @@ Static validation:
 - .github/workflows/release.yml: valid YAML
 
 Bundle metadata:
-- Version: 26.10.1
-- Public tag: v26.10.1
+- Version: 26.10.2
+- Public tag: v26.10.2
 - Publisher: _davstudios
 - Homepage: https://davstudios.it
 - License: MIT
@@ -42,8 +43,9 @@ Release workflow:
 - Linux apt workflow hardened against unavailable Microsoft repositories
 
 Functional comparison:
-- src/, src-tauri/src/, vite.config.js and index.html were compared against the previous v26.10.1 package.
-- No functional differences were introduced by this metadata/release-standard update.
+- Functional sources were compared against the previous v26.10.1 package.
+- Repository-wide neutral normalization was applied to associate every packaged file with the v26.10.2 release.
+- No functional differences were introduced in the rename engine or application behavior.
 
 Code signing:
 - No trusted commercial Windows code-signing certificate configured.
@@ -54,3 +56,4 @@ Build environment:
 - Cargo/Rust is not available in this execution environment, so the native Tauri/Rust bundle was not compiled here.
 - A fresh npm dependency installation was attempted but exceeded the available execution timeout; no partial node_modules directory is included in the archive.
 - GitHub Actions remains responsible for native Windows, macOS and Linux release builds.
+

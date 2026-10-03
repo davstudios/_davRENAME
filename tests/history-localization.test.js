@@ -16,3 +16,4 @@ test('history metadata follows current language', () => {
   assert.match(english, /52 files$/);
   assert.notEqual(italian, english);
 });
+

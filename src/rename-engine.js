@@ -234,3 +234,4 @@ function isCaseInsensitivePlatform(platform) {
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+

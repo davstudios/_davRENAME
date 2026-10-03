@@ -388,3 +388,4 @@ fn normalize_path(path: &Path) -> String {
 fn naturalish_key(name: &str) -> String {
     name.to_lowercase()
 }
+

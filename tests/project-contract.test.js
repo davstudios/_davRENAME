@@ -5,6 +5,8 @@ import fs from 'node:fs';
 test('workflow GitHub pubblica release stabile con description bilingue', () => {
   const text = fs.readFileSync('.github/workflows/release.yml', 'utf8');
   assert.match(text, /Verify release versions/);
+  assert.match(text, /package-lock\.json/);
+  assert.match(text, /Cargo\.lock/);
   assert.match(text, /Read release description from tagged commit/);
   assert.match(text, /git log -1 --pretty=%b/);
   assert.match(text, /releaseBody:\s*\$\{\{ steps\.release_description\.outputs\.body \}\}/);
@@ -40,3 +42,4 @@ test('set icone Tauri completo', () => {
     assert.equal(fs.existsSync(`src-tauri/icons/${file}`), true, `${file} mancante`);
   }
 });
+

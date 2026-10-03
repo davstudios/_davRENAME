@@ -6,3 +6,4 @@ command -v cargo >/dev/null || { echo "[ERRORE] Rust/Cargo non trovato. Installa
 npm install --no-audit --no-fund
 echo "Avvio _davRENAME..."
 npm run desktop
+

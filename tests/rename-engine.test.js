@@ -78,3 +78,4 @@ test('backslash is allowed by Unix preview validation', () => {
   const preview = buildPreview(unix, [{type:'template',pattern:'hello\\world.txt'}], 'linux');
   assert.equal(preview.invalidCount, 0);
 });
+

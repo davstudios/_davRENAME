@@ -130,7 +130,7 @@ Scarica sempre le release dalla repository GitHub ufficiale di `_davstudios`. Qu
 - Homepage: https://davstudios.it
 - Licenza: MIT
 - Bundle identifier: `studio.dav.rename`
-- Versione corrente: `26.10.1`
+- Versione corrente: `26.10.2`
 
 ## Sviluppo locale
 
@@ -161,7 +161,7 @@ _davRENAME usa **Tauri 2** per l'app desktop, **Rust** per il backend e **JavaSc
 
 ## Note della release
 
-La v26.10.1 adotta il nuovo standard di versioning e packaging `_davstudios` senza modificare il motore di rinomina, l'interfaccia o la logica funzionale dell'app.
+La v26.10.2 adotta il nuovo standard di versioning e packaging `_davstudios` senza modificare il motore di rinomina, l'interfaccia o la logica funzionale dell'app.
 
 ## Licenza
 
@@ -295,7 +295,7 @@ Always download releases from the official `_davstudios` GitHub repository. When
 - Homepage: https://davstudios.it
 - License: MIT
 - Bundle identifier: `studio.dav.rename`
-- Current version: `26.10.1`
+- Current version: `26.10.2`
 
 ## Local development
 
@@ -326,7 +326,7 @@ _davRENAME uses **Tauri 2** for the desktop application, **Rust** for the backen
 
 ## Release notes
 
-v26.10.1 adopts the new `_davstudios` versioning and packaging standard without changing the rename engine, interface or the application's functional logic.
+v26.10.2 adopts the new `_davstudios` versioning and packaging standard without changing the rename engine, interface or the application's functional logic.
 
 ## License
 
@@ -342,3 +342,4 @@ If `_davRENAME` is useful to you and you would like to support the development o
 </p>
 
 <div align="right"><a href="#davrename">↑ Back to top</a></div>
+
