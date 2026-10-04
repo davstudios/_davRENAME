@@ -1,11 +1,16 @@
 :root{
-  --motion-reveal-distance:1.15rem;
-  --motion-reveal-duration:680ms;
-  --motion-reveal-step:72ms;
-  --motion-page-out:180ms;
-  --motion-page-in:420ms;
+  --motion-distance:1.4rem;
+  --motion-distance-sm:.75rem;
+  --motion-duration-fast:360ms;
+  --motion-duration-base:720ms;
+  --motion-duration-slow:940ms;
+  --motion-step:72ms;
+  --motion-page-out:170ms;
+  --motion-page-in:430ms;
   --motion-ease-out:cubic-bezier(.16,1,.3,1);
-  --motion-ease-in:cubic-bezier(.4,0,1,1)
+  --motion-ease-soft:cubic-bezier(.22,.61,.36,1);
+  --motion-ease-in:cubic-bezier(.4,0,1,1);
+  --motion-ease-in-out:cubic-bezier(.65,0,.35,1)
 }
 .shell[data-motion-mode="startup"] .brand,
 .shell[data-motion-mode="startup"] .nav-item,
@@ -14,7 +19,7 @@
 .shell[data-motion-mode="startup"] .main>.workspace,
 .shell[data-motion-mode="startup"] .main>.history-page,
 .shell[data-motion-mode="startup"] .main>.settings-grid{
-  animation:dav-load-in var(--motion-reveal-duration) var(--motion-ease-out) both
+  animation:dav-load-in var(--motion-duration-base) var(--motion-ease-out) both
 }
 .shell[data-motion-mode="startup"] .brand{animation-delay:0ms}
 .shell[data-motion-mode="startup"] .nav-item:nth-child(1){animation-delay:72ms}
@@ -25,6 +30,7 @@
 .shell[data-motion-mode="startup"] .main>.workspace,
 .shell[data-motion-mode="startup"] .main>.history-page,
 .shell[data-motion-mode="startup"] .main>.settings-grid{animation-delay:144ms}
+.main.is-page-leaving{animation:dav-page-out var(--motion-page-out) var(--motion-ease-in) both;pointer-events:none}
 .shell[data-motion-mode="page"] .main>.topbar,
 .shell[data-motion-mode="page"] .main>.workspace,
 .shell[data-motion-mode="page"] .main>.history-page,
@@ -33,84 +39,60 @@
 }
 .shell[data-motion-mode="page"] .main>.workspace,
 .shell[data-motion-mode="page"] .main>.history-page,
-.shell[data-motion-mode="page"] .main>.settings-grid{animation-delay:58ms}
+.shell[data-motion-mode="page"] .main>.settings-grid{animation-delay:72ms}
+.shell[data-motion-mode="page"] .nav-item.active{animation:dav-nav-active var(--motion-page-in) var(--motion-ease-out) both}
 .shell[data-motion-mode="content"] .workspace-grid>.panel,
 .shell[data-motion-mode="content"] .empty-wrap>.drop-zone,
 .shell[data-motion-mode="content"] .empty-wrap>.trust-row{
-  animation:dav-load-in 520ms var(--motion-ease-out) both
+  animation:dav-content-in var(--motion-duration-base) var(--motion-ease-out) both
 }
 .shell[data-motion-mode="content"] .workspace-grid>.panel:nth-child(2),
 .shell[data-motion-mode="content"] .empty-wrap>.trust-row{animation-delay:72ms}
-.shell[data-motion-mode="content"] .trust-row>div{
-  animation:dav-soft-in 520ms var(--motion-ease-out) both
-}
+.shell[data-motion-mode="content"] .trust-row>div{animation:dav-content-in var(--motion-duration-base) var(--motion-ease-out) both}
 .shell[data-motion-mode="content"] .trust-row>div:nth-child(1){animation-delay:144ms}
 .shell[data-motion-mode="content"] .trust-row>div:nth-child(2){animation-delay:216ms}
 .shell[data-motion-mode="content"] .trust-row>div:nth-child(3){animation-delay:288ms}
-.shell[data-motion-mode="rules"] .rule-card{
-  animation:dav-rule-settle 360ms var(--motion-ease-out) both;
-  animation-delay:var(--reveal-delay,0ms)
-}
-.rule-picker{transform-origin:top right;animation:dav-pop-in 220ms var(--motion-ease-out) both}
-.toast{animation:dav-toast-in 420ms var(--motion-ease-out) both}
-.toast.is-leaving{animation:dav-toast-out 180ms var(--motion-ease-in) both}
-.button,.icon-button,.nav-item,.rule-picker button,.text-button,.rule-card,.trust-row>div,.drop-zone,.setting-row,input,select{
+.shell[data-motion-mode="rules"] .rule-card{animation:dav-rule-settle var(--motion-duration-fast) var(--motion-ease-out) both;animation-delay:var(--reveal-delay,0ms)}
+.rule-picker{transform-origin:top right;animation:dav-pop-in var(--motion-duration-fast) var(--motion-ease-out) both}
+.toast{animation:dav-toast-in 430ms var(--motion-ease-out) both}
+.toast.is-leaving{animation:dav-toast-out 170ms var(--motion-ease-in) both}
+.button,.icon-button,.nav-item,.rule-picker button,.text-button,.rule-card,.trust-row>div,.drop-zone,.setting-row,input,select,.website-button,.coffee-button{
   transition-timing-function:var(--motion-ease-out)
 }
-.button:active:not(:disabled),.icon-button:active:not(:disabled),.nav-item:active,.rule-picker button:active{transform:scale(.975)}
-.drop-icon{transition:transform 420ms var(--motion-ease-out),background-color 260ms var(--motion-ease-out)}
-.drop-zone:hover .drop-icon{transform:translate3d(0,-3px,0) scale(1.025)}
-.drop-zone.drag-over .drop-icon{animation:dav-drop-pulse 900ms var(--motion-ease-out) infinite alternate}
+.button:active:not(:disabled),.icon-button:active:not(:disabled),.nav-item:active,.rule-picker button:active{transform:translate3d(0,1px,0)}
+.drop-icon{transition:transform 520ms var(--motion-ease-out),background-color 360ms var(--motion-ease-soft)}
+.drop-zone:hover .drop-icon{transform:translate3d(0,-3px,0)}
+.drop-zone.drag-over .drop-icon{animation:dav-drop-pulse 940ms var(--motion-ease-out) infinite alternate}
 .rule-card:hover{transform:translate3d(0,-1px,0);border-color:color-mix(in srgb,var(--accent) 28%,var(--border))}
 .trust-row>div:hover{transform:translate3d(0,-2px,0);border-color:color-mix(in srgb,var(--accent) 24%,var(--border));box-shadow:0 12px 28px rgba(0,0,0,.05)}
 [data-theme="dark"] .trust-row>div:hover{box-shadow:0 12px 32px rgba(0,0,0,.18)}
-.status{transition:background-color 260ms var(--motion-ease-out),color 260ms var(--motion-ease-out),transform 260ms var(--motion-ease-out)}
+.status{transition:background-color 360ms var(--motion-ease-soft),color 360ms var(--motion-ease-soft),transform 360ms var(--motion-ease-out)}
 tr:hover .status{transform:translate3d(2px,0,0)}
-.switch span,.switch span:after{transition-duration:260ms;transition-timing-function:var(--motion-ease-out)}
-input:focus,select:focus{transition:border-color 220ms var(--motion-ease-out),box-shadow 220ms var(--motion-ease-out),background-color 220ms var(--motion-ease-out)}
-@keyframes dav-load-in{
-  from{opacity:0;transform:translate3d(0,var(--motion-reveal-distance),0)}
-  to{opacity:1;transform:none}
-}
-@keyframes dav-page-in{
-  from{opacity:0;transform:translate3d(0,.55rem,0)}
-  to{opacity:1;transform:none}
-}
-@keyframes dav-soft-in{
-  from{opacity:0;transform:translate3d(0,.7rem,0) scale(.99)}
-  to{opacity:1;transform:none}
-}
-@keyframes dav-rule-settle{
-  from{opacity:.45;transform:translate3d(0,.45rem,0) scale(.992)}
-  to{opacity:1;transform:none}
-}
-@keyframes dav-pop-in{
-  from{opacity:0;transform:translate3d(0,-6px,0) scale(.975)}
-  to{opacity:1;transform:none}
-}
-@keyframes dav-toast-in{
-  from{opacity:0;transform:translate3d(0,12px,0) scale(.985)}
-  to{opacity:1;transform:none}
-}
-@keyframes dav-toast-out{
-  from{opacity:1;transform:none}
-  to{opacity:0;transform:translate3d(0,6px,0) scale(.985)}
-}
-@keyframes dav-drop-pulse{
-  from{transform:translate3d(0,-2px,0) scale(1.02)}
-  to{transform:translate3d(0,-6px,0) scale(1.055)}
-}
+.switch span,.switch span:after{transition-duration:360ms;transition-timing-function:var(--motion-ease-out)}
+input:focus,select:focus{transition:border-color 360ms var(--motion-ease-out),box-shadow 360ms var(--motion-ease-out),background-color 360ms var(--motion-ease-soft)}
+@keyframes dav-load-in{from{opacity:0;translate:0 .85rem;filter:blur(3px)}to{opacity:1;translate:0 0;filter:blur(0)}}
+@keyframes dav-page-out{from{opacity:1;transform:translate3d(0,0,0)}to{opacity:0;transform:translate3d(0,-.22rem,0)}}
+@keyframes dav-page-in{from{opacity:0;transform:translate3d(0,.38rem,0);filter:blur(2px)}to{opacity:1;transform:translate3d(0,0,0);filter:blur(0)}}
+@keyframes dav-content-in{from{opacity:0;translate:0 var(--motion-distance-sm);filter:blur(3px)}to{opacity:1;translate:0 0;filter:blur(0)}}
+@keyframes dav-nav-active{from{opacity:.55;transform:translate3d(-.3rem,0,0)}to{opacity:1;transform:none}}
+@keyframes dav-rule-settle{from{opacity:.45;transform:translate3d(0,.45rem,0)}to{opacity:1;transform:none}}
+@keyframes dav-pop-in{from{opacity:0;transform:translate3d(0,-.45rem,0)}to{opacity:1;transform:none}}
+@keyframes dav-toast-in{from{opacity:0;transform:translate3d(0,.75rem,0);filter:blur(2px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes dav-toast-out{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(0,.35rem,0)}}
+@keyframes dav-drop-pulse{from{transform:translate3d(0,-2px,0)}to{transform:translate3d(0,-6px,0)}}
+:root[data-ui-transition="language"]::view-transition-old(root){animation:dav-page-out 170ms var(--motion-ease-in) both}
+:root[data-ui-transition="language"]::view-transition-new(root){animation:dav-page-in 430ms var(--motion-ease-out) both}
+:root[data-ui-transition="language-out"] #app{animation:dav-page-out 170ms var(--motion-ease-in) both}
+:root[data-ui-transition="language-in"] #app{animation:dav-page-in 430ms var(--motion-ease-out) both}
+html.theme-transitioning::view-transition-old(root),html.theme-transitioning::view-transition-new(root){animation:none;mix-blend-mode:normal}
+html.theme-transitioning::view-transition-old(root){z-index:1}
+html.theme-transitioning::view-transition-new(root){z-index:2;animation:dav-theme-reveal 680ms cubic-bezier(.22,.72,0,1) both}
+@keyframes dav-theme-reveal{from{clip-path:circle(0 at var(--theme-transition-x,100%) var(--theme-transition-y,0))}to{clip-path:circle(var(--theme-transition-radius,150vmax) at var(--theme-transition-x,100%) var(--theme-transition-y,0))}}
+html.theme-transition-capture body,html.theme-transition-capture body *{transition-duration:0s!important;transition-delay:0s!important}
+html.theme-transition-fallback body,html.theme-transition-fallback :is(header,main,section,aside,nav,button,input,select){transition:background-color 480ms cubic-bezier(.22,.72,0,1),color 420ms cubic-bezier(.22,.72,0,1),border-color 480ms cubic-bezier(.22,.72,0,1),box-shadow 480ms cubic-bezier(.22,.72,0,1),fill 420ms cubic-bezier(.22,.72,0,1),stroke 420ms cubic-bezier(.22,.72,0,1)!important}
 @media (prefers-reduced-motion:reduce){
-  .shell[data-motion-mode] .brand,
-  .shell[data-motion-mode] .nav-item,
-  .shell[data-motion-mode] .sidebar-bottom,
-  .shell[data-motion-mode] .main>* ,
-  .shell[data-motion-mode] .workspace-grid>.panel,
-  .shell[data-motion-mode] .empty-wrap>* ,
-  .shell[data-motion-mode] .trust-row>div,
-  .shell[data-motion-mode] .rule-card,
-  .rule-picker,.toast,.toast.is-leaving,.drop-zone.drag-over .drop-icon{animation:none!important}
+  .shell[data-motion-mode] .brand,.shell[data-motion-mode] .nav-item,.shell[data-motion-mode] .sidebar-bottom,.shell[data-motion-mode] .main>*,.shell[data-motion-mode] .workspace-grid>.panel,.shell[data-motion-mode] .empty-wrap>*,.shell[data-motion-mode] .trust-row>div,.shell[data-motion-mode] .rule-card,.main.is-page-leaving,.rule-picker,.toast,.toast.is-leaving,.drop-zone.drag-over .drop-icon{animation:none!important}
   *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+  html.theme-transitioning::view-transition-new(root){animation:none}
+  html.theme-transition-fallback body,html.theme-transition-fallback :is(header,main,section,aside,nav,button,input,select){transition:none!important}
 }
-:root[data-ui-transition="theme"]::view-transition-old(root){animation:dav-theme-out 180ms var(--motion-ease-in) both}:root[data-ui-transition="theme"]::view-transition-new(root){animation:dav-theme-in 420ms var(--motion-ease-out) both}:root[data-ui-transition="language"]::view-transition-old(root){animation:dav-language-out 180ms var(--motion-ease-in) both}:root[data-ui-transition="language"]::view-transition-new(root){animation:dav-language-in 420ms var(--motion-ease-out) both}:root[data-ui-transition="theme-out"] #app{animation:dav-theme-out 180ms var(--motion-ease-in) both}:root[data-ui-transition="theme-in"] #app{animation:dav-theme-in 420ms var(--motion-ease-out) both}:root[data-ui-transition="language-out"] #app{animation:dav-language-out 180ms var(--motion-ease-in) both}:root[data-ui-transition="language-in"] #app{animation:dav-language-in 420ms var(--motion-ease-out) both}@keyframes dav-theme-out{from{opacity:1;transform:none}to{opacity:0;transform:scale(.997)}}@keyframes dav-theme-in{from{opacity:0;transform:scale(1.003)}to{opacity:1;transform:none}}@keyframes dav-language-out{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(0,-.3rem,0)}}@keyframes dav-language-in{from{opacity:0;transform:translate3d(0,.55rem,0)}to{opacity:1;transform:none}}
-

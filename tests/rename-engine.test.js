@@ -79,3 +79,4 @@ test('backslash is allowed by Unix preview validation', () => {
   assert.equal(preview.invalidCount, 0);
 });
 
+

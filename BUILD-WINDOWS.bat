@@ -11,3 +11,4 @@ echo.
 echo Build completata. Controlla: src-tauri\target\release\bundle\
 pause
 
+

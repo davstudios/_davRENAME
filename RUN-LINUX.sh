@@ -7,3 +7,4 @@ npm install --no-audit --no-fund
 echo "Avvio _davRENAME..."
 npm run desktop
 
+

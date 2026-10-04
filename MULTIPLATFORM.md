@@ -18,11 +18,11 @@
 
 Il workflow `.github/workflows/release.yml` compila sui runner nativi di GitHub e allega i pacchetti direttamente a una GitHub Release.
 
-Può essere avviato dalla scheda Actions oppure tramite un tag coerente con la versione dell'app, ad esempio `v26.10.2`.
+Può essere avviato dalla scheda Actions oppure tramite un tag coerente con la versione dell'app, ad esempio `v26.10.3`.
 
-## Release v26.10.2
+## Standard di release
 
-La release adotta i metadata ufficiali `_davstudios`, la licenza MIT e il versioning `YY.M.REVISIONE`. Il workflow usa la Description bilingue del commit associato al tag come descrizione della GitHub Release e richiede entrambe le sezioni `🇮🇹` e `🇺🇸`.
+Le release adottano i metadata ufficiali `_davstudios`, la licenza MIT e il versioning `YY.M.REVISIONE`. Il workflow usa la Description bilingue del commit associato al tag come descrizione della GitHub Release e richiede entrambe le sezioni `🇮🇹` e `🇺🇸`.
 
 Le build GitHub continuano a essere generate su runner nativi per Windows, macOS e Linux. Il workflow Linux disabilita eventuali sorgenti Microsoft non raggiungibili prima di `apt-get update`.
 

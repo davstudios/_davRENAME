@@ -1,5 +1,15 @@
 # Changelog
 
+## 26.10.3
+
+- Allineato il motion system dell'app al riferimento `_davstudios` sito v52: easing, reveal, stagger, transizioni pagina, cambio tema radiale e supporto reduced-motion.
+- Aggiunta una vera transizione di uscita e ingresso tra Rinomina, Attività e Impostazioni, eliminando i cambi schermata istantanei.
+- Rimossa la versione dalla UI ordinaria; la versione tecnica resta nei manifest e nelle release.
+- Normalizzato il README con una struttura stabile e priva di riferimenti alla release corrente.
+- Configurata la build Windows Release come applicazione GUI per evitare la finestra CMD separata e la relativa voce in Alt+Tab.
+- Aggiunti test automatici per il motion system v52 e per il Windows GUI subsystem.
+- Eseguita una nuova repository normalization neutra senza modificare il motore di rinomina o il comportamento funzionale.
+
 ## 26.10.2
 
 - Eseguita la repository normalization completa dell'intero pacchetto, aggiornando realmente tutti i file della release senza modifiche funzionali.

@@ -43,3 +43,24 @@ test('set icone Tauri completo', () => {
   }
 });
 
+
+
+test('motion system matches the _davstudios website v52 language', () => {
+  const motion = fs.readFileSync('src/motion.css', 'utf8');
+  assert.match(motion, /--motion-duration-base:720ms/);
+  assert.match(motion, /--motion-duration-slow:940ms/);
+  assert.match(motion, /--motion-step:72ms/);
+  assert.match(motion, /--motion-page-out:170ms/);
+  assert.match(motion, /--motion-page-in:430ms/);
+  assert.match(motion, /cubic-bezier\(\.16,1,\.3,1\)/);
+  assert.match(motion, /blur\(3px\)/);
+  assert.match(motion, /dav-theme-reveal 680ms/);
+  assert.match(motion, /prefers-reduced-motion:reduce/);
+});
+
+test('Windows release uses the GUI subsystem without console window', () => {
+  const main = fs.readFileSync('src-tauri/src/main.rs', 'utf8');
+  assert.match(main, /cfg_attr\(not\(debug_assertions\), windows_subsystem = "windows"\)/);
+  const rust = fs.readdirSync('src-tauri/src').filter((name) => name.endsWith('.rs')).map((name) => fs.readFileSync(`src-tauri/src/${name}`, 'utf8')).join('\n');
+  assert.doesNotMatch(rust, /(?:std::process::)?Command::new/);
+});

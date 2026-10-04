@@ -1,15 +1,15 @@
-# Build notes — _davRENAME v26.10.2
+# Build notes — _davRENAME v26.10.3
 
 La codebase è predisposta per Windows, macOS e Linux.
 
 ## Verifiche eseguite
 
-- test automatici complessivi: 25/25 PASS
+- test automatici complessivi: 28/28 PASS
 - sintassi JavaScript: OK
 - configurazioni JSON: valide
 - workflow GitHub release: YAML valido
 - audit commenti nei sorgenti: PASS
-- confronto dei sorgenti funzionali con il pacchetto precedente: nessuna modifica
+- motore di rinomina e backend funzionale preservati; modifiche limitate a UI/motion, packaging e documentazione
 
 ## Release metadata
 
@@ -31,5 +31,9 @@ I pacchetti Windows e macOS sono distribuiti senza un certificato commerciale Wi
 
 ## Limite dell'ambiente di generazione
 
-Rust/Cargo non è installato nell'ambiente usato per preparare questo archivio, quindi qui non sono stati prodotti installer nativi. È stato tentato anche un `npm ci` pulito, ma l'installazione ha superato il timeout disponibile; la directory parziale `node_modules` è stata rimossa dall'archivio. La pipeline GitHub inclusa installa le dipendenze, esegue i test e compila i bundle sui runner nativi.
+Rust/Cargo e le dipendenze frontend installate non sono disponibili nell'ambiente usato per preparare questo archivio, quindi qui non è stato compilato il bundle Tauri nativo. I test Node e le validazioni statiche sono stati eseguiti localmente; GitHub Actions installa le dipendenze e compila i bundle sui runner Windows, macOS e Linux.
 
+
+## Final polish v52
+
+Il motion system segue il riferimento del sito `_davstudios` v52. Le build Windows Release usano il GUI subsystem per evitare una finestra console separata; le build debug mantengono il comportamento utile allo sviluppo. La versione non viene mostrata nell’interfaccia ordinaria.

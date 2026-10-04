@@ -2,7 +2,6 @@ import './styles.css';
 import './motion.css';
 import { buildPreview, operationsFromPreview } from './rename-engine.js';
 import { invoke } from '@tauri-apps/api/core';
-import { getVersion } from '@tauri-apps/api/app';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { open, confirm, message, save } from '@tauri-apps/plugin-dialog';
 import { openUrl } from '@tauri-apps/plugin-opener';
@@ -81,11 +80,11 @@ const state = {
   previewPage: 0,
   filters: { extension: 'all', folder: 'all' },
   customPresets: JSON.parse(localStorage.getItem('davrename-presets') || '[]'),
-  presetSelection: '',
-  appVersion: ''
+  presetSelection: ''
 };
 
 const app = document.querySelector('#app');
+let pageTransitionLocked = false;
 
 function t(it, en) { return state.settings.language === 'en' ? en : it; }
 
@@ -102,11 +101,36 @@ function applyTheme() {
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0b0b0d' : '#fbfbfd');
 }
 
-function runUiTransition(kind, update) {
+function themeTransitionGeometry(element) {
+  if (!element) return null;
+  const rect = element.getBoundingClientRect();
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
+  return { x, y, radius: Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) };
+}
+
+function runUiTransition(kind, update, origin = null) {
   const root = document.documentElement;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced) {
     update();
+    return;
+  }
+  if (kind === 'theme') {
+    const geometry = themeTransitionGeometry(origin);
+    if (geometry && typeof document.startViewTransition === 'function') {
+      root.style.setProperty('--theme-transition-x', `${geometry.x}px`);
+      root.style.setProperty('--theme-transition-y', `${geometry.y}px`);
+      root.style.setProperty('--theme-transition-radius', `${geometry.radius}px`);
+      root.classList.add('theme-transitioning', 'theme-transition-capture');
+      const transition = document.startViewTransition(() => update());
+      transition.ready.finally(() => root.classList.remove('theme-transition-capture'));
+      transition.finished.finally(() => root.classList.remove('theme-transitioning', 'theme-transition-capture'));
+      return;
+    }
+    root.classList.add('theme-transition-fallback');
+    update();
+    setTimeout(() => root.classList.remove('theme-transition-fallback'), 520);
     return;
   }
   if (typeof document.startViewTransition === 'function') {
@@ -124,16 +148,34 @@ function runUiTransition(kind, update) {
     setTimeout(() => {
       if (root.dataset.uiTransition === `${kind}-in`) delete root.dataset.uiTransition;
     }, 430);
-  }, 180);
+  }, 170);
 }
 
-function setVisualSetting(key, value, kind) {
+function setVisualSetting(key, value, kind, origin = null) {
   if (state.settings[key] === value) return;
   runUiTransition(kind, () => {
     state.settings[key] = value;
     saveState();
     render();
-  });
+  }, origin);
+}
+
+async function navigatePage(page) {
+  if (pageTransitionLocked || page === state.page) return;
+  pageTransitionLocked = true;
+  try {
+    if (page === 'history') await loadHistory(false);
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const main = document.querySelector('.main');
+    if (!reduced && main) {
+      main.classList.add('is-page-leaving');
+      await new Promise((resolve) => setTimeout(resolve, 170));
+    }
+    state.page = page;
+    render({ motion: 'page' });
+  } finally {
+    pageTransitionLocked = false;
+  }
 }
 
 function render(options = {}) {
@@ -152,7 +194,7 @@ function render(options = {}) {
           ${navButton('settings', icons.settings, t('Impostazioni','Settings'))}
         </nav>
         <div class="sidebar-bottom">
-          <button class="coffee-button" id="coffee-button" type="button" title="${t('Comprami Un Caffè','Buy Me A Coffee')}" aria-label="${t('Comprami Un Caffè','Buy Me A Coffee')}">${icons.coffee}<span>${t('Comprami Un Caffè','Buy Me A Coffee')}</span></button>
+          <button class="coffee-button" id="coffee-button" type="button" title="${t('Offrimi Un Caffè','Buy Me A Coffee')}" aria-label="${t('Offrimi Un Caffè','Buy Me A Coffee')}">${icons.coffee}<span>${t('Offrimi Un Caffè','Buy Me A Coffee')}</span></button>
           <button class="icon-button theme-toggle" id="theme-toggle" title="${t('Cambia tema','Change theme')}" aria-label="${t('Cambia tema','Change theme')}"><span class="theme-icon theme-icon-sun">${icons.sun}</span><span class="theme-icon theme-icon-moon">${icons.moon}</span></button>
         </div>
       </aside>
@@ -364,7 +406,7 @@ function renderSettings() {
       <div class="setting-control"><span class="setting-control-label">${t('Tema','Theme')}</span>${settingSelect('setting-theme',state.settings.theme,[['system',t('Sistema','System')],['light',t('Chiaro','Light')],['dark',t('Scuro','Dark')]])}</div>
       <div class="setting-control"><span class="setting-control-label">${t('Lingua','Language')}</span>${settingSelect('setting-language',state.settings.language,[['it','Italiano'],['en','English']])}</div>
     </div>
-    <div class="panel about-card"><div class="brand big"><span>_dav</span>RENAME</div><p>${t('Rinomina batch locale, sicura e reversibile. Nessun account, nessun upload, nessuna telemetria di default.','Local, safe and reversible batch renaming. No account, no uploads, no telemetry by default.')}</p><div class="about-links"><button class="website-button" data-action="website">${icons.globe}<span>davstudios.it</span></button><button class="coffee-button wide" data-action="coffee">${icons.coffee}<span>${t('Comprami Un Caffè','Buy Me A Coffee')}</span></button></div><div class="version">${state.appVersion ? `v${escapeHtml(state.appVersion)} · ` : ''}Open source</div></div>
+    <div class="panel about-card"><div class="brand big"><span>_dav</span>RENAME</div><p>${t('Rinomina batch locale, sicura e reversibile. Nessun account, nessun upload, nessuna telemetria di default.','Local, safe and reversible batch renaming. No account, no uploads, no telemetry by default.')}</p><div class="about-links"><button class="website-button" data-action="website">${icons.globe}<span>davstudios.it</span></button><button class="coffee-button wide" data-action="coffee">${icons.coffee}<span>${t('Offrimi Un Caffè','Buy Me A Coffee')}</span></button></div><div class="about-meta">MIT · Open source</div></div>
   </section>`;
 }
 
@@ -449,7 +491,7 @@ function bindSettingSelects() {
         closeSettingSelect(select);
         const delay = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 180;
         setTimeout(() => {
-          if (id === 'setting-theme') setVisualSetting('theme', value, 'theme');
+          if (id === 'setting-theme') setVisualSetting('theme', value, 'theme', select.querySelector('.dav-select-trigger'));
           if (id === 'setting-language') setVisualSetting('language', value, 'language');
         }, delay);
       });
@@ -458,10 +500,10 @@ function bindSettingSelects() {
 }
 
 function bindEvents(preview) {
-  document.querySelectorAll('[data-page]').forEach((el) => el.addEventListener('click', () => { state.page = el.dataset.page; if (state.page === 'history') loadHistory(); else render({ motion: 'page' }); }));
-  document.querySelector('#theme-toggle')?.addEventListener('click', () => {
+  document.querySelectorAll('[data-page]').forEach((el) => el.addEventListener('click', () => navigatePage(el.dataset.page)));
+  document.querySelector('#theme-toggle')?.addEventListener('click', (event) => {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-    setVisualSetting('theme', next, 'theme');
+    setVisualSetting('theme', next, 'theme', event.currentTarget);
   });
   document.querySelectorAll('[data-action="coffee"], #coffee-button').forEach((node) => node.addEventListener('click', async () => {
     const url = 'https://buymeacoffee.com/davstudios';
@@ -710,11 +752,6 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
   if (state.settings.theme === 'system') runUiTransition('theme', () => render());
 });
 async function initializeApp() {
-  try {
-    state.appVersion = await getVersion();
-  } catch {
-    state.appVersion = '';
-  }
   applyTheme();
   render({ motion: 'startup' });
   await initDragDrop();

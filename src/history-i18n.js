@@ -11,3 +11,4 @@ export function historyMeta(language, timestamp, count) {
   return `${formattedDate} · ${count} ${fileLabel}`;
 }
 
+

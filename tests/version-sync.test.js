@@ -17,7 +17,7 @@ function cargoLockVersion(text) {
 }
 
 test('release versions stay aligned', () => {
-  assert.equal(packageVersion, '26.10.2');
+  assert.equal(packageVersion, '26.10.3');
   assert.equal(packageLock.version, packageVersion);
   assert.equal(packageLock.packages?.['']?.version, packageVersion);
   assert.equal(tauriVersion, packageVersion);
@@ -30,8 +30,8 @@ test('Cargo.lock version parser supports Windows CRLF checkouts', () => {
   assert.equal(cargoLockVersion(crlf), packageVersion);
 });
 
-test('UI reads the app version from Tauri instead of hardcoding it', () => {
-  assert.match(mainSource, /getVersion/);
+test('UI does not expose the release version', () => {
+  assert.doesNotMatch(mainSource, /getVersion|appVersion/);
   assert.doesNotMatch(mainSource, /v\d+\.\d+\.\d+/);
 });
 

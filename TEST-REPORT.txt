@@ -1,7 +1,7 @@
-_davRENAME v26.10.2 — Test report
+_davRENAME v26.10.3 — Test report
 Date: 2026-10-03
 
-Automated tests: 26/26 passed
+Automated tests: 28/28 passed
 - Rename engine tests: passed
 - History localization tests: passed
 - Workspace utilities tests: passed
@@ -11,20 +11,23 @@ Automated tests: 26/26 passed
 - Version synchronization: passed
 - Cargo.lock CRLF regression: passed
 - Tauri icon-set contract: passed
+- _davstudios website v52 motion contract: passed
+- Windows GUI subsystem / no-console contract: passed
+- UI version-removal contract: passed
 
 Static validation:
 - src/*.js: syntax valid
 - tests/*.js: syntax valid
 - vite.config.js: syntax valid
-- package.json: valid JSON
-- package-lock.json: valid JSON
-- src-tauri/tauri.conf.json: valid JSON
-- src-tauri/capabilities/default.json: valid JSON
+- package.json and package-lock.json: valid JSON
+- Tauri JSON configuration and capability files: valid JSON
 - .github/workflows/release.yml: valid YAML
+- Linux/macOS shell scripts: bash syntax valid
+- icon set: valid and pixel-identical to the previous release
 
 Bundle metadata:
-- Version: 26.10.2
-- Public tag: v26.10.2
+- Version: 26.10.3
+- Public tag: v26.10.3
 - Publisher: _davstudios
 - Homepage: https://davstudios.it
 - License: MIT
@@ -34,26 +37,25 @@ Bundle metadata:
 - Linux DEB section: utils
 - Linux DEB priority: optional
 
-Release workflow:
-- Windows x64 NSIS
-- macOS Universal DMG
-- Linux x64 AppImage and DEB
-- GitHub Release body is read from the tagged commit Description
-- Both 🇮🇹 and 🇺🇸 sections are required
-- Linux apt workflow hardened against unavailable Microsoft repositories
+Final-polish checks:
+- Motion timings/easing aligned with the _davstudios website v52 reference.
+- Page switches use a 170 ms exit and 430 ms entrance instead of instant replacement.
+- Theme changes use the website-style 680 ms radial reveal when View Transitions are available.
+- prefers-reduced-motion is respected.
+- The release version is not displayed in the ordinary UI.
+- Windows Release uses windows_subsystem = "windows" so the app does not create a separate CMD window.
+- No child-process Command::new calls are present in the Rust application sources.
 
-Functional comparison:
-- Functional sources were compared against the previous v26.10.1 package.
-- Repository-wide neutral normalization was applied to associate every packaged file with the v26.10.2 release.
-- No functional differences were introduced in the rename engine or application behavior.
+Repository normalization:
+- All 57 files that existed in v26.10.2 have different bytes in v26.10.3.
+- PNG, ICO and ICNS icon pixels remain identical to v26.10.2.
+- Functional rename-engine/backend files were preserved apart from neutral repository normalization.
 
-Code signing:
-- No trusted commercial Windows code-signing certificate configured.
-- No Apple Developer ID/notarization configured.
-- README contains SmartScreen, Gatekeeper and AppImage guidance.
+Windows checkout simulation:
+- Cargo.lock converted physically to CRLF.
+- Full automated suite: 28/28 passed.
 
 Build environment:
-- Cargo/Rust is not available in this execution environment, so the native Tauri/Rust bundle was not compiled here.
-- A fresh npm dependency installation was attempted but exceeded the available execution timeout; no partial node_modules directory is included in the archive.
+- Cargo/Rust and installed frontend dependencies are not available in this execution environment, so the native Tauri bundle was not compiled here.
+- `npm run build` cannot run without the local Vite dependency installed.
 - GitHub Actions remains responsible for native Windows, macOS and Linux release builds.
-
